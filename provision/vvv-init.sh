@@ -28,6 +28,7 @@ eval composer create-project roots/bedrock ./
 # The Vagrant site setup script will restart Nginx for us
 
 echo "$project Bedrock is now installed";
+fi
 
 echo "Configuring Nginx";
 
