@@ -23,7 +23,7 @@ touch ${VVV_PATH_TO_SITE}/log/access.log
 
 echo "Installing Bedrock stack using Composer"
 
-eval cd .. && composer create-project roots/bedrock ./
+eval composer create-project roots/bedrock ./
 
 # The Vagrant site setup script will restart Nginx for us
 
