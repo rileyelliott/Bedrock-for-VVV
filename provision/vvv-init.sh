@@ -1,35 +1,29 @@
 project="${VVV_SITE_NAME}"
 
+# fetch the first host as the primary domain. If none is available, generate a default using the site name
+DB_NAME=$(get_config_value 'db_name' "${VVV_SITE_NAME}_wpdb")
+DB_NAME=${DB_NAME//[\\\/\.\<\>\:\"\'\|\?\!\*]/}
+
 echo "Commencing Bedrock Setup"
 
 # Make a database, if we don't already have one
 echo "Creating database"
-mysql -u root --password=root -e "CREATE DATABASE IF NOT EXISTS $project"
-mysql -u root --password=root -e "GRANT ALL PRIVILEGES ON $project.* TO wp@localhost IDENTIFIED BY 'wp';"
+mysql -u root --password=root -e "CREATE DATABASE IF NOT EXISTS $DB_NAME"
+mysql -u root --password=root -e "GRANT ALL PRIVILEGES ON $DB_NAME.* TO wp@localhost IDENTIFIED BY 'wp';"
 
 # Download Bedrock
-if [ ! -d public_html ]
+if [ ! -d config ]
 then
 
-  # Nginx Logs
-  echo "Creating logs"
-  mkdir -p ${VVV_PATH_TO_SITE}/log
-  touch ${VVV_PATH_TO_SITE}/log/error.log
-  touch ${VVV_PATH_TO_SITE}/log/access.log
+# Nginx Logs
+echo "Creating logs"
+mkdir -p ${VVV_PATH_TO_SITE}/log
+touch ${VVV_PATH_TO_SITE}/log/error.log
+touch ${VVV_PATH_TO_SITE}/log/access.log
 
-  echo "Installing Bedrock stack using Composer"
+echo "Installing Bedrock stack using Composer"
 
-  # TODO: change eval to cd ${VVV_PATH_TO_SITE}/public_html or use mkdir command
-  eval cd .. && composer create-project roots/bedrock public_html
-
-  # Start download theme
-  echo "Downloading Theme"
-  eval cd public_html/web/app/themes
-  git clone https://github.com/adamk22/base-camp.git $project-theme
-  eval cd $project-theme
-  composer install && npm install
-  # End download theme
-fi
+eval cd .. && composer create-project roots/bedrock ./
 
 # The Vagrant site setup script will restart Nginx for us
 
